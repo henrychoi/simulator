@@ -140,7 +140,7 @@ namespace Simulator.Sensors
             var orientation = transform.rotation;
             orientation.Set(-orientation.z, orientation.x, -orientation.y, orientation.w); // converting to right handed xyz
 
-            data = new ImuData()
+            var imu = new ImuData() // publish local variable to avoid MT corruption
             {
                 Name = Name,
                 Frame = Frame,
@@ -156,6 +156,7 @@ namespace Simulator.Sensors
                 LinearVelocity = velocity,
                 AngularVelocity = angularVelocity,
             };
+            data = imu; // save a snapshot for Visualize()
 
             var correctedData = new CorrectedImuData()
             {
@@ -185,7 +186,7 @@ namespace Simulator.Sensors
                 {
                     if (Bridge != null && Bridge.Status == Status.Connected)
                     {
-                        Publish(data);
+                        Publish(imu);
                         CorrectedWriter?.Invoke(correctedData);
                     }
                 })));
